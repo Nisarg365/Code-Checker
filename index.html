@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Code Checker</title>
+
+    <!-- Favicon link for the browser tab -->
+    <link rel="icon" href="DALL·E 2024-11-14 21.28.00 - A logo design for a browser-based code checker tool, with a sleek, modern aesthetic. The logo should include an icon that symbolizes code or checking .webp" type="image/webp" />
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .top-line {
+            width: 100%;
+            height: 80px;
+            background-color: #0073e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            width: 90%;
+            max-width: 1200px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 160px;  /* Adjusted to leave space for the blue line */
+            padding: 30px;
+        }
+
+        .left-panel {
+            width: 50%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: -150px;
+        }
+
+        .right-panel {
+            width: 50%;
+            padding: 30px;
+            background-color: #f0f8ff;
+            border-left: 2px solid #0073e6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-panel h1, .right-panel h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input, button {
+            padding: 12px;
+            width: 80%;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+
+        input:focus, button:focus {
+            outline: none;
+            border-color: #5f8aff;
+        }
+
+        input {
+            background-color: #fafafa;
+        }
+
+        button {
+            background-color: #5f8aff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4c7bff;
+        }
+
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .valid {
+            color: green;
+        }
+
+        .invalid {
+            color: red;
+        }
+
+        .admin-mode {
+            color: #0066cc;
+            font-weight: bold;
+        }
+
+        #adminButtons {
+            display: none;
+            margin-top: 20px;
+        }
+
+        footer {
+            background-color: #0073e6;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .credits {
+            margin-top: 40px;
+            font-size: 14px;
+            text-align: center;
+            color: #888;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Blue line at the top with the "Code Checker" text -->
+    <div class="top-line">
+        Code Checker
+    </div>
+
+    <div class="container">
+        <!-- Left Panel: Code Input -->
+        <div class="left-panel">
+            <h1>Check if Your Code is Real</h1>
+            <input type="text" id="codeInput" placeholder="Enter code" />
+            <button onclick="checkCode()">Check Code</button>
+            <p class="result" id="result"></p>
+        </div>
+
+        <!-- Right Panel: Admin Mode -->
+        <div class="right-panel">
+            <p class="admin-mode" id="adminModeStatus"></p>
+            <div id="adminButtons">
+                <button onclick="addNewCode()">Add Code</button>
+                <button onclick="removeCode()">Remove Code</button>
+                <button onclick="viewAllCodes()">View List</button>
+                <button onclick="exitAdminMode()">Exit Admin Mode</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Nisarg. All rights reserved.</p>
+    </footer>
+
+    <!-- Credits Section -->
+    <div class="credits">
+        <p>Code powered by <a href="https://chat.openai.com">ChatGPT</a></p>
+        <p>Logo generated with assistance from OpenAI's <a href="https://openai.com/dall-e">DALL-E</a>.</p>
+    </div>
+
+    <script>
+        const adminPassword = "@Jaykumar2015";
+        let codes = JSON.parse(localStorage.getItem("codes")) || ["8479"];
+
+        function saveCodes() {
+            localStorage.setItem("codes", JSON.stringify(codes));
+        }
+
+        function checkCode() {
+            const code = document.getElementById("codeInput").value;
+            const result = document.getElementById("result");
+
+            if (code === adminPassword) {
+                result.textContent = "Admin mode activated";
+                result.classList.add("valid");
+                result.classList.remove("invalid");
+                document.getElementById("adminButtons").style.display = "block";
+            } else if (codes.includes(code)) {
+                result.textContent = "This code is VALID!";
+                result.classList.add("valid");
+                result.classList.remove("invalid");
+            } else {
+                result.textContent = "This code is INVALID!";
+                result.classList.add("invalid");
+                result.classList.remove("valid");
+            }
+        }
+
+        // Admin functions
+        function addNewCode() {
+            const newCode = prompt("Enter a new code:");
+            if (newCode) {
+                codes.push(newCode);
+                saveCodes();
+                alert(`Code "${newCode}" added.`);
+            }
+        }
+
+        function removeCode() {
+            const codeToRemove = prompt("Enter the code to remove:");
+            if (codeToRemove) {
+                const index = codes.indexOf(codeToRemove);
+                if (index !== -1) {
+                    codes.splice(index, 1);
+                    saveCodes();
+                    alert(`Code "${codeToRemove}" removed.`);
+                } else {
+                    alert(`Code "${codeToRemove}" not found.`);
+                }
+            }
+        }
+
+        function viewAllCodes() {
+            alert("All codes: " + codes.join(", "));
+        }
+
+        function exitAdminMode() {
+            document.getElementById("adminButtons").style.display = "none";
+            document.getElementById("result").textContent = "Exited admin mode.";
+            document.getElementById("result").classList.remove("valid");
+        }
+    </script>
+
+</body>
+</html>
